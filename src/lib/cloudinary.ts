@@ -1,20 +1,17 @@
-// /src/lib/cloudinary.ts
-
 export const CLOUDINARY_CONFIG = {
-    cloudName: 'dbn6nfh2q',
+  cloudName: "dbn6nfh2q",
 };
 
-// Untuk IMAGE (JPG, PNG, dll)
+// IMAGE
 export const getImageUrl = (publicId: string): string => {
-    return `https://res.cloudinary.com/${CLOUDINARY_CONFIG.cloudName}/image/upload/f_auto,q_auto/${publicId}`;
+  return `https://res.cloudinary.com/dbn6nfh2q/image/upload/f_auto,q_auto,w_800/${publicId}`;
 };
 
-// Untuk VIDEO (MP4)
 export const getVideoUrl = (publicId: string): string => {
-    return `https://res.cloudinary.com/${CLOUDINARY_CONFIG.cloudName}/video/upload/q_auto/${publicId}`;
+  return `https://res.cloudinary.com/dbn6nfh2q/video/upload/q_auto,f_auto,w_800/${publicId}`;
 };
 
-// Untuk AUDIO (MP3) — Cloudinary treat audio sebagai video resource
+// AUDIO
 export const getAudioUrl = (publicId: string): string => {
-    return `https://res.cloudinary.com/${CLOUDINARY_CONFIG.cloudName}/video/upload/${publicId}`;
+  return `https://res.cloudinary.com/${CLOUDINARY_CONFIG.cloudName}/video/upload/${publicId}`;
 };
