@@ -1,5 +1,5 @@
 export const CLOUDINARY_CONFIG = {
-  cloudName: "dbn6nfh2q",
+  cloudName: 'dbn6nfh2q',
 };
 
 // IMAGE

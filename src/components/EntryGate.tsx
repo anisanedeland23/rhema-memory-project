@@ -1,22 +1,60 @@
-"use client";
+    "use client";
 
-import { useState } from "react";
+    import { useState } from "react";
+    import { motion, AnimatePresence } from "framer-motion";
 
-export default function EntryGate({ children }: any) {
-  const [entered, setEntered] = useState(false);
+    type EntryGateProps = {
+    onEnter: () => void;
+    };
 
-  if (!entered) {
+    export default function EntryGate({ onEnter }: EntryGateProps) {
+    const [open, setOpen] = useState(true);
+
+        const handleEnter = async () => {
+    if ((window as any).startAudio) {
+        await (window as any).startAudio();
+    }
+
+    setOpen(false);
+
+    setTimeout(() => {
+        onEnter();
+    }, 500);
+    };
+
     return (
-      <div className="h-screen flex items-center justify-center bg-black text-white">
-        <button
-          onClick={() => setEntered(true)}
-          className="border border-white px-6 py-3 uppercase tracking-widest hover:bg-white hover:text-black transition-all"
-        >
-          Tap to Enter
-        </button>
-      </div>
-    );
-  }
+        <AnimatePresence>
+        {open && (
+            <motion.div
+            key="entry-gate"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
+            className="fixed inset-0 z-[100] bg-black flex items-center justify-center"
+            >
+            <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1 }}
+                className="flex flex-col items-center gap-6"
+            >
+                {/* Title kecil biar lebih cinematic */}
+                <p className="text-white/40 tracking-[0.5em] text-xs uppercase">
+                A Memory Experience
+                </p>
 
-  return children;
-}
+                {/* BUTTON */}
+                <motion.button
+                onClick={handleEnter}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="text-white border border-white/30 px-10 py-4 rounded-full tracking-[0.3em] uppercase text-sm hover:bg-white hover:text-black transition"
+                >
+                Tap to Enter
+                </motion.button>
+            </motion.div>
+            </motion.div>
+        )}
+        </AnimatePresence>
+    );
+    }

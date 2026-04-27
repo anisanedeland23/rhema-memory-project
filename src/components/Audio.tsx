@@ -1,69 +1,89 @@
-"use client";
+    "use client";
 
-import { useEffect, useRef, useState } from "react";
+    import { useEffect, useRef, useState } from "react";
 
-export default function AudioPlayer() {
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false);
+    export default function AudioPlayer() {
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
 
-  useEffect(() => {
-    const handleFirstClick = () => {
-      if (!audioRef.current || hasInteracted) return;
+    // 🔥 START AUDIO (dipanggil dari EntryGate)
+    useEffect(() => {
+        (window as any).startAudio = async () => {
+        if (!audioRef.current) return;
 
-      audioRef.current.play().then(() => {
+        try {
+            audioRef.current.volume = 0;
+
+            await audioRef.current.play();
+            setIsPlaying(true);
+
+            // 🎧 FADE IN
+            let vol = 0;
+            const fade = setInterval(() => {
+            if (!audioRef.current) return;
+
+            if (vol < 1) {
+                vol += 0.05;
+                audioRef.current.volume = vol;
+            } else {
+                clearInterval(fade);
+            }
+            }, 100);
+
+        } catch (err) {
+            console.log("Autoplay blocked:", err);
+        }
+        };
+
+        (window as any).bgAudio = audioRef;
+    }, []);
+
+    // 🔥 PAUSE SAAT PINDAH TAB
+    useEffect(() => {
+        const handleVisibility = () => {
+        if (!audioRef.current) return;
+
+        if (document.hidden) {
+            audioRef.current.pause();
+        } else if (isPlaying) {
+            audioRef.current.play().catch(() => {});
+        }
+        };
+
+        document.addEventListener("visibilitychange", handleVisibility);
+
+        return () => {
+        document.removeEventListener("visibilitychange", handleVisibility);
+        };
+    }, [isPlaying]);
+
+    const toggleAudio = async () => {
+        if (!audioRef.current) return;
+
+        if (audioRef.current.paused) {
+        await audioRef.current.play().catch(() => {});
         setIsPlaying(true);
-        setHasInteracted(true);
-      }).catch(() => {});
-    };
-
-    const handleVisibilityChange = () => {
-      if (!audioRef.current) return;
-
-      if (document.hidden) {
+        } else {
         audioRef.current.pause();
         setIsPlaying(false);
-      }
+        }
     };
 
-    window.addEventListener("click", handleFirstClick);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return (
+        <>
+        <audio ref={audioRef} loop preload="auto">
+            <source
+            src="https://res.cloudinary.com/dbn6nfh2q/video/upload/v1777296425/Ever_Since_Day_One_-_Army_Of_God_Worship_mdw716.mp3"
+            type="audio/mpeg"
+            />
+        </audio>
 
-    return () => {
-      window.removeEventListener("click", handleFirstClick);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [hasInteracted]);
-
-  const toggleAudio = () => {
-    if (!audioRef.current) return;
-
-    if (audioRef.current.paused) {
-      audioRef.current.play();
-      setIsPlaying(true);
-    } else {
-      audioRef.current.pause();
-      setIsPlaying(false);
+        <button
+            onClick={toggleAudio}
+            className="fixed bottom-6 right-6 z-50 bg-black/70 text-white text-xs px-4 py-2 rounded-full border border-white/20"
+        >
+            {isPlaying ? "Sound Off" : "Sound On"}
+        </button>
+        </>
+    );
     }
-  };
-
-  return (
-    <>
-      {/* AUDIO */}
-      <audio ref={audioRef} loop preload="auto">
-        <source
-          src="https://res.cloudinary.com/dbn6nfh2q/video/upload/v1777296425/Ever_Since_Day_One_-_Army_Of_God_Worship_mdw716.mp3"
-          type="audio/mpeg"
-        />
-      </audio>
-
-      {/* BUTTON */}
-      <button
-        onClick={toggleAudio}
-        className="fixed bottom-6 right-6 z-50 bg-black/70 backdrop-blur-md text-white text-xs px-4 py-2 rounded-full border border-white/20 hover:bg-white hover:text-black transition-all duration-300"
-      >
-        {isPlaying ? "Sound Off" : "Sound On"}
-      </button>
-    </>
-  );
-}

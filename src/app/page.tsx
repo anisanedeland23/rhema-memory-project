@@ -1,22 +1,34 @@
-import EntryGate from "@/components/EntryGate";
-import AudioPlayer from "@/components/Audio";
+"use client";
+
+import { useState } from "react";
 import Hero from "@/components/Hero";
 import Gallery from "@/components/Gallery";
+import AudioPlayer from "@/components/Audio";
+import EntryGate from "@/components/EntryGate";
 import VoiceNotes from "@/components/VoiceNotes";
+import Ending from "@/components/Ending";
 
 export default function Home() {
+  const [entered, setEntered] = useState(false);
+
   return (
-    <EntryGate>
-      <main className="bg-black min-h-screen">
-        <AudioPlayer />
+    <main className="bg-black min-h-screen">
 
-        <Hero />
+      {/* ENTRY GATE */}
+      {!entered && <EntryGate onEnter={() => setEntered(true)} />}
 
-        <div className="bg-black py-20">
+      {/* AUDIO */}
+      {entered && <AudioPlayer />}
+
+      {/* CONTENT */}
+      {entered && (
+        <>
+          <Hero />
           <Gallery />
           <VoiceNotes />
-        </div>
-      </main>
-    </EntryGate>
+          <Ending />
+        </>
+      )}
+    </main>
   );
 }
