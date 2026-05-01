@@ -1,34 +1,23 @@
-"use client";
-
-import { useState } from "react";
 import Hero from "@/components/Hero";
-import Gallery from "@/components/Gallery";
-import AudioPlayer from "@/components/Audio";
-import EntryGate from "@/components/EntryGate";
-import VoiceNotes from "@/components/VoiceNotes";
-import Ending from "@/components/Ending";
+import SliderMemories from "@/components/SliderMemories"; // Section Animasi 1
+import Gallery from "@/components/Gallery";         // Section Animasi 2 (Masonry)
+import Audio from "@/components/Audio";
 
 export default function Home() {
-  const [entered, setEntered] = useState(false);
-
   return (
-    <main className="bg-black min-h-screen">
+    <main className="min-h-screen">
+      <Audio />
+      
+      {/* 1. Hero Section (Visual Impact) */}
+      <Hero />
 
-      {/* ENTRY GATE */}
-      {!entered && <EntryGate onEnter={() => setEntered(true)} />}
+      {/* 2. Endless Slide Section (Dynamic Motion) */}
+      <SliderMemories />
 
-      {/* AUDIO */}
-      {entered && <AudioPlayer />}
-
-      {/* CONTENT */}
-      {entered && (
-        <>
-          <Hero />
-          <Gallery />
-          <VoiceNotes />
-          <Ending />
-        </>
-      )}
+      {/* 3. Main Gallery Section (The Journey) */}
+      <div className="py-20">
+        <Gallery />
+      </div>
     </main>
   );
 }
